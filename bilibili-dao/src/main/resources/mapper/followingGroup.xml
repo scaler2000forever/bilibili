@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atlinlin.bilibili.dao.FollowingGroupDao">
+
+    <!--    void addFollowingGroup(FollowingGroup followingGroup);-->
+    <!--这里我们需要返回创建好的groupId 所以需要useGeneratedKeys这个属性-->
+    <insert id="addFollowingGroup" useGeneratedKeys="true" keyProperty="id">
+        insert into t_following_group(userId, `name`, `type`, createTime)
+        VALUES (#{userId}, #{name}, #{type}, #{createTime})
+    </insert>
+    <!--    FollowingGroup getByType(String type);-->
+    <select id="getByType" parameterType="java.lang.String" resultType="com.atlinlin.bilibili.domain.FollowingGroup">
+        select *
+        from t_following_group
+        where `type` = #{type}
+    </select>
+
+    <!--    FollowingGroup getById(Long id);-->
+    <select id="getById" parameterType="java.lang.Long" resultType="com.atlinlin.bilibili.domain.FollowingGroup">
+        select *
+        from t_following_group
+        where id = #{id}
+    </select>
+
+    <!--    List<FollowingGroup> getByUserId(Long userId);-->
+    <!--    这里查询条件有两种类型-->
+    <select id="getByUserId" resultType="com.atlinlin.bilibili.domain.FollowingGroup">
+        select *
+        from t_following_group
+        where userId = #{userId}
+           or `type` in ('0', '1', '2')
+    </select>
+    <!--    List<FollowingGroup> getUserFollowingGroups(Long userId);-->
+    <select id="getUserFollowingGroups" resultType="com.atlinlin.bilibili.domain.FollowingGroup">
+        select *
+        from t_following_group
+        where userId = #{userId}
+    </select>
+</mapper>

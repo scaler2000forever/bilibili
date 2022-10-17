@@ -9,8 +9,7 @@
                 #{email},
                 #{password},
                 #{salt},
-                #{createTime}
-                )
+                #{createTime})
 
     </insert>
     <insert id="addUserInfo" parameterType="com.atlinlin.bilibili.domain.UserInfo">
@@ -19,7 +18,7 @@
         values (#{userId}, #{nick}, #{avatar}, #{sign}, #{gender}, #{birth}, #{createTime})
     </insert>
 
-<!--    Integer updateUsers(User user);-->
+    <!--    Integer updateUsers(User user);-->
     <update id="updateUsers" parameterType="com.atlinlin.bilibili.domain.User">
         update t_user set
         <if test="phone != null and phone != '' ">
@@ -37,24 +36,24 @@
     <update id="updateUserInfos" parameterType="com.atlinlin.bilibili.domain.UserInfo">
         update t_user_info
         set
-            <if test="nick != null and nick != ''">
-                nick = #{nick},
-            </if>
-            <if test="avatar != null">
-                avatar = #{avatar},
-            </if>
-            <if test="sign != null">
-                sign = #{sign},
-            </if>
-            <if test="birth != null and nick != ''">
-                birth = #{birth},
-            </if>
-            <if test="gender != null and gender != ''">
-                gender = #{gender},
-            </if>
-            updateTime = #{updateTime}
+        <if test="nick != null and nick != ''">
+            nick = #{nick},
+        </if>
+        <if test="avatar != null">
+            avatar = #{avatar},
+        </if>
+        <if test="sign != null">
+            sign = #{sign},
+        </if>
+        <if test="birth != null and nick != ''">
+            birth = #{birth},
+        </if>
+        <if test="gender != null and gender != ''">
+            gender = #{gender},
+        </if>
+        updateTime = #{updateTime}
         where
-              userId = #{userId}
+        userId = #{userId}
     </update>
 
     <!--User getUserByPhone(String phone);-->
@@ -65,11 +64,46 @@
     </select>
 
     <select id="getUserById" parameterType="java.lang.Long" resultType="com.atlinlin.bilibili.domain.User">
-        select * from t_user where id = #{id}
+        select *
+        from t_user
+        where id = #{id}
     </select>
 
     <select id="getUserInfoByUserId" parameterType="java.lang.Long" resultType="com.atlinlin.bilibili.domain.UserInfo">
-        select * from t_user_info where userId = #{userId}
+        select *
+        from t_user_info
+        where userId = #{userId}
+    </select>
+
+    <select id="getUserInfoByUserIds" resultType="com.atlinlin.bilibili.domain.UserInfo">
+        select * from t_user_info
+        <where>
+            <if test="userIdList != null and userIdList > 0 ">
+                and userId in
+                <foreach collection="userIdList" item="userId" index="index" open="(" close=")" separator=",">
+                    #{userId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="pageListUserInfos" resultType="com.atlinlin.bilibili.domain.UserInfo">
+        SELECT * FROM t_user_info
+        SELECT * FROM t_user_info
+        where 1 = 1
+        <if test="nick != null and nick != ''">
+            and nick like '%${nick}%'
+        </if>
+        order by id desc
+        limit #{start} ,#{limit}
+    </select>
+
+    <select id="pageCountUserInfos" resultType="java.lang.Integer">
+        SELECT * FROM t_user_info
+        where 1 = 1
+            <if test="nick != null and nick != ''">
+                and nick like '%${nick}%'
+            </if>
     </select>
 
 

@@ -16,5 +16,7 @@ public class FollowingGroup {
     private String type;
     private Date createTime;
     private Date updateTime;
-    private List<UserInfo>followingUserInfoList;//存放关注者的基本信息
+    private List<UserInfo> followingUserInfoList;//存放关注者的基本信息
+
+
 }

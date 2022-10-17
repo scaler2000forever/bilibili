@@ -1,13 +1,18 @@
 package com.atlinlin.bilibili.api;
 
+import com.alibaba.fastjson.JSONObject;
 import com.atlinlin.bilibili.api.support.UserSupport;
 import com.atlinlin.bilibili.domain.JsonResponse;
+import com.atlinlin.bilibili.domain.PageResult;
 import com.atlinlin.bilibili.domain.User;
 import com.atlinlin.bilibili.domain.UserInfo;
+import com.atlinlin.bilibili.service.UserFollowingService;
 import com.atlinlin.bilibili.service.UserService;
 import com.atlinlin.bilibili.service.util.RSAUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @ author : LiLin
@@ -21,6 +26,9 @@ public class UserApi {
 
     @Autowired
     private UserSupport userSupport;
+
+    @Autowired
+    private UserFollowingService userFollowingService;
 
     /**
      * 获取用户信息
@@ -57,8 +65,7 @@ public class UserApi {
     }
 
     /**
-     * 修改个人表
-     *
+     * 更新用户
      * @param user
      * @return
      * @throws Exception
@@ -72,7 +79,7 @@ public class UserApi {
     }
 
     /**
-     * 修改个人详细表
+     * 修改个人基本信息
      * @param userInfo
      * @return
      * @throws Exception
@@ -83,6 +90,31 @@ public class UserApi {
         userInfo.setUserId(userId); //这里id是用户的不是那个主键id
         userService.updateUserInfos(userInfo);
         return JsonResponse.success();
+    }
+
+    /**
+     * 分页查询
+     * @param no 必传参数
+     * @param size 必传参数
+     * @param nick  可选参数
+     * @return
+     */
+    @GetMapping("/user-infos")
+    public JsonResponse<PageResult<UserInfo>> pageListUserInfos(@RequestParam Integer no, @RequestParam Integer size ,String nick){
+        Long userId = userSupport.getCurrentUserId();
+        //内含map数组
+        JSONObject params = new JSONObject();
+        params.put("no",no);
+        params.put("size",size);
+        params.put("nick",nick);
+        params.put("userId",userId);
+        PageResult<UserInfo> result = userService.pageListUserInfos(params);
+        //判断用户关注状态
+        if(result.getTotal()>0){
+            List<UserInfo> checkUserInfoList =  userFollowingService.checkFollowingStatus(result.getList(),userId);
+            result.setList(checkUserInfoList);
+        }
+        return new JsonResponse<>(result);
     }
 
 

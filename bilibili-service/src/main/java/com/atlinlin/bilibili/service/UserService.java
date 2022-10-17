@@ -1,8 +1,10 @@
 package com.atlinlin.bilibili.service;
 
 import ch.qos.logback.core.joran.conditional.ThenOrElseActionBase;
+import com.alibaba.fastjson.JSONObject;
 import com.atlinlin.bilibili.dao.UserDao;
 import com.atlinlin.bilibili.domain.JsonResponse;
+import com.atlinlin.bilibili.domain.PageResult;
 import com.atlinlin.bilibili.domain.User;
 import com.atlinlin.bilibili.domain.UserInfo;
 import com.atlinlin.bilibili.domain.constant.UserConstant;
@@ -15,7 +17,10 @@ import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @ author : LiLin
@@ -141,5 +146,27 @@ public class UserService {
         //这里不用像上面一样进行判断，这里是判断后的第二步
         userInfo.setUpdateTime(new Date());
         userDao.updateUserInfos(userInfo);
+    }
+
+    public User getUserById(Long followingId) {
+        return userDao.getUserById(followingId);
+    }
+
+    public List<UserInfo> getUserInfoByUserIds(Set<Long> userIdList) {
+        return userDao.getUserInfoByUserIds(userIdList);
+    }
+
+    public PageResult<UserInfo> pageListUserInfos(JSONObject params) {
+        Integer no = params.getInteger("no");
+        Integer size = params.getInteger("size");
+        params.put("start" ,(no -1) * size);
+        params.put("limit",size);
+        Integer total = userDao.pageCountUserInfos(params);
+        //建一个空的list列表 这里是真正的进行分页列表
+        List<UserInfo> list = new ArrayList<>();
+        if (total > 0) {
+            list = userDao.pageListUserInfos(params);
+        }
+        return new PageResult<>(total,list);
     }
 }

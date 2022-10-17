@@ -1,9 +1,14 @@
 package com.atlinlin.bilibili.dao;
 
+import com.alibaba.fastjson.JSONObject;
 import com.atlinlin.bilibili.domain.User;
 import com.atlinlin.bilibili.domain.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -28,4 +33,10 @@ public interface UserDao {
     Integer updateUsers(User user);
 
     Integer updateUserInfos(UserInfo userInfo);
+
+    List<UserInfo> getUserInfoByUserIds(Set<Long> userIdList);
+
+    Integer pageCountUserInfos(Map<String,Object> params);
+
+    List<UserInfo> pageListUserInfos(Map<String, Object> params);
 }
