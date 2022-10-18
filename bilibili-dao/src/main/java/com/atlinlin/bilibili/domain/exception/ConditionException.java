@@ -1,5 +1,8 @@
 package com.atlinlin.bilibili.domain.exception;
 
+/**
+ * 自定义异常
+ */
 public class ConditionException extends RuntimeException{
 
     private static final long serialVersionUID = 1L;
