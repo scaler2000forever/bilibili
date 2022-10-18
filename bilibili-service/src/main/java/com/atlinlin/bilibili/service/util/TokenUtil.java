@@ -28,7 +28,7 @@ public class TokenUtil {
         //生成对应的token
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.SECOND,30);
+        calendar.add(Calendar.HOUR,1);
         return JWT.create().withKeyId(String.valueOf(userId))
                 .withIssuer(ISSUER)
                 .withExpiresAt(calendar.getTime())

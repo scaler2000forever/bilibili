@@ -5,3 +5,9 @@ spring:
     url: jdbc:mysql://localhost:3306/bilibili
     username: root
     password: abc123
+
+#RocketMQ
+rocketmq:
+  name:
+    server:
+      address: localhost:9876
