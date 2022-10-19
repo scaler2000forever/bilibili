@@ -78,7 +78,7 @@ public class UserApi {
     }
 
     /**
-     * 退出登录，删除refreshToken
+     * 退出登录，删除 refreshToken
      * @param request
      * @return
      */
