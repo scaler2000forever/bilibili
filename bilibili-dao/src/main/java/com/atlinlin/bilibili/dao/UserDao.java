@@ -1,14 +1,13 @@
 package com.atlinlin.bilibili.dao;
 
 import com.alibaba.fastjson.JSONObject;
+import com.atlinlin.bilibili.domain.RefreshTokenDetail;
 import com.atlinlin.bilibili.domain.User;
 import com.atlinlin.bilibili.domain.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -39,4 +38,10 @@ public interface UserDao {
     Integer pageCountUserInfos(Map<String,Object> params);
 
     List<UserInfo> pageListUserInfos(Map<String, Object> params);
+
+    Integer deleteRefreshToken(@Param("refreshToken") String refreshToken,@Param("userId") Long userId);
+                                                                                                        //这里字段注意，前面是创建时间
+    Integer addRefreshToken(@Param("refreshToken") String refreshToken, @Param("userId") Long userId, @Param("createTime") Date createTime);
+
+    RefreshTokenDetail getRefreshTokenDetail(String refreshToken);
 }

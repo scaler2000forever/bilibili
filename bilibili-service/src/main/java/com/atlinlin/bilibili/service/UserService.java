@@ -3,10 +3,7 @@ package com.atlinlin.bilibili.service;
 import ch.qos.logback.core.joran.conditional.ThenOrElseActionBase;
 import com.alibaba.fastjson.JSONObject;
 import com.atlinlin.bilibili.dao.UserDao;
-import com.atlinlin.bilibili.domain.JsonResponse;
-import com.atlinlin.bilibili.domain.PageResult;
-import com.atlinlin.bilibili.domain.User;
-import com.atlinlin.bilibili.domain.UserInfo;
+import com.atlinlin.bilibili.domain.*;
 import com.atlinlin.bilibili.domain.constant.UserConstant;
 import com.atlinlin.bilibili.domain.exception.ConditionException;
 import com.atlinlin.bilibili.service.util.MD5Util;
@@ -17,10 +14,7 @@ import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @ author : LiLin
@@ -49,9 +43,9 @@ public class UserService {
         Date now = new Date();
         String salt = String.valueOf(now.getTime());
         String password = user.getPassword();
-        String rawPassword ;
+        String rawPassword;
         try {
-             rawPassword = RSAUtil.decrypt(password);
+            rawPassword = RSAUtil.decrypt(password);
         } catch (Exception e) {
             throw new ConditionException("密码解密失败！");
         }
@@ -76,7 +70,7 @@ public class UserService {
     }
 
     //获取用户手机号
-    public User getUserByPhone(String phone){
+    public User getUserByPhone(String phone) {
         return userDao.getUserByPhone(phone);
     }
 
@@ -87,6 +81,7 @@ public class UserService {
         if (StringUtils.isNullOrEmpty(phone)) {
             throw new ConditionException("手机号不能为空！");
         }
+        //这里this是相当于这个User类
         User dbUser = this.getUserByPhone(phone);
         if (dbUser == null) {
             throw new ConditionException("当前用户不存在！");
@@ -101,7 +96,7 @@ public class UserService {
         //md5密码加密，用数据库里的salt
         String salt = dbUser.getSalt();
         String md5Password = MD5Util.sign(rawPassword, salt, "UTF-8");
-        if (!md5Password.equals(dbUser.getPassword())){
+        if (!md5Password.equals(dbUser.getPassword())) {
             throw new ConditionException("密码错误！");
         }
         //加一个工具类，生成token返回给前端
@@ -111,6 +106,7 @@ public class UserService {
 
     /**
      * 获取用户信息
+     *
      * @param userId
      * @return
      */
@@ -123,6 +119,7 @@ public class UserService {
 
     /**
      * 用户修改
+     *
      * @param user
      * @return
      */
@@ -130,11 +127,11 @@ public class UserService {
         //获取该用户
         Long id = user.getId();
         User dbUser = userDao.getUserById(id);
-        if(dbUser==null){
+        if (dbUser == null) {
             throw new ConditionException("用户不存在");
         }
         //修改密码
-        if(!StringUtils.isNullOrEmpty(user.getPassword())){
+        if (!StringUtils.isNullOrEmpty(user.getPassword())) {
             String rawPassword = RSAUtil.decrypt(user.getPassword());
             String md5Password = MD5Util.sign(rawPassword, dbUser.getSalt(), "UTF-8");
             user.setPassword(md5Password);
@@ -147,6 +144,7 @@ public class UserService {
 
     /**
      * 用户详细表修改
+     *
      * @param userInfo
      */
     public void updateUserInfos(UserInfo userInfo) {
@@ -166,14 +164,68 @@ public class UserService {
     public PageResult<UserInfo> pageListUserInfos(JSONObject params) {
         Integer no = params.getInteger("no");
         Integer size = params.getInteger("size");
-        params.put("start" ,(no -1) * size);
-        params.put("limit",size);
+        params.put("start", (no - 1) * size);
+        params.put("limit", size);
         Integer total = userDao.pageCountUserInfos(params);
         //建一个空的list列表 这里是真正的进行分页列表
         List<UserInfo> list = new ArrayList<>();
         if (total > 0) {
             list = userDao.pageListUserInfos(params);
         }
-        return new PageResult<>(total,list);
+        return new PageResult<>(total, list);
+    }
+
+    public Map<String, Object> loginForDts(User user) throws Exception {
+        String phone = user.getPhone();
+        if (StringUtils.isNullOrEmpty(phone)) {
+            throw new ConditionException("手机号不能为空!");
+        }
+        //这里this是相当于这个User类
+        User dbUser = this.getUserByPhone(phone);
+        if (dbUser == null) {
+            throw new ConditionException("当前用户不存在！");
+        }
+        String password = user.getPassword();
+        String rawPassword;
+        try {
+            rawPassword = RSAUtil.decrypt(password);
+        } catch (Exception e) {
+            throw new ConditionException("解密失败！");
+        }
+        String salt = dbUser.getSalt();
+        String md5Password = MD5Util.sign(rawPassword, salt, "UTF-8");
+        if (!md5Password.equals(dbUser.getPassword())) {
+            throw new ConditionException("密码错误!");
+        }
+        //这里是后加为了后面反复使用做缩减
+        Long userId = dbUser.getId();
+        String accessToken = TokenUtil.generateToken(userId);
+        //refreshToken生成时间暂定为一周存在数据库
+        String refreshToken = TokenUtil.generateRefreshToken(userId);
+        //保存refresh Token到数据库 新建一个refreshToken表
+        // 为了检查是否refreshToken存在然后判断刷新accessToken否则就告诉前端失效了
+        userDao.deleteRefreshToken(refreshToken, userId);
+        //加入到数据库和单token不同
+        userDao.addRefreshToken(refreshToken, userId, new Date());
+        //构造完成返回为Map
+        Map<String, Object> result = new HashMap<>();
+        result.put("accessToken", accessToken);
+        result.put("refreshToken", refreshToken);
+        return result;
+    }
+
+    public void logout(String refreshToken, Long userId) {
+        userDao.deleteRefreshToken(refreshToken, userId);
+    }
+
+    public String refreshAccessToken(String refreshToken) throws Exception {
+        //获取refreshTokenDetail
+        RefreshTokenDetail refreshTokenDetail = userDao.getRefreshTokenDetail(refreshToken);
+        if (refreshTokenDetail == null) {
+            throw new ConditionException("555","token过期！");
+        }
+        //获取userId是为了获取token
+        Long userId = refreshTokenDetail.getUserId();
+        return TokenUtil.generateToken(userId);
     }
 }

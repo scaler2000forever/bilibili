@@ -17,6 +17,10 @@
             (userId, nick, avatar, sign, gender, birth, createTime)
         values (#{userId}, #{nick}, #{avatar}, #{sign}, #{gender}, #{birth}, #{createTime})
     </insert>
+    <insert id="addRefreshToken">
+        insert into t_refresh_token(userId, refreshToken, createTime)
+        VALUES (#{userId}, #{refreshToken}, #{createTime})
+    </insert>
 
     <!--    Integer updateUsers(User user);-->
     <update id="updateUsers" parameterType="com.atlinlin.bilibili.domain.User">
@@ -55,6 +59,12 @@
         where
         userId = #{userId}
     </update>
+
+    <delete id="deleteRefreshToken">
+        delete
+        from t_refresh_token
+        where refreshToken = #{refreshToken}
+    </delete>
 
     <!--User getUserByPhone(String phone);-->
     <select id="getUserByPhone" parameterType="java.lang.String" resultType="com.atlinlin.bilibili.domain.User">
@@ -101,9 +111,12 @@
     <select id="pageCountUserInfos" resultType="java.lang.Integer">
         SELECT * FROM t_user_info
         where 1 = 1
-            <if test="nick != null and nick != ''">
-                and nick like '%${nick}%'
-            </if>
+        <if test="nick != null and nick != ''">
+            and nick like '%${nick}%'
+        </if>
+    </select>
+    <select id="getRefreshTokenDetail" resultType="com.atlinlin.bilibili.domain.RefreshTokenDetail">
+        select * from t_refresh_token where refreshToken = #{refreshToken}
     </select>
 
 
