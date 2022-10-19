@@ -3,9 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.atlinlin.bilibili.dao.UserRoleDao">
+    <insert id="addUserRole">
+        insert into t_user_role(userId, roleId, createTime)
+        VALUES (#{userId}, #{roleId}, #{createTime})
+    </insert>
 
     <select id="getUserRoleByUserId" resultType="com.atlinlin.bilibili.domain.auth.UserRole">
-        select tur.*,tar.name roleName ,tar.code roleCode
+        select tur.*, tar.name roleName, tar.code roleCode
         from t_user_role tur
                  left outer join t_auth_role tar on tur.userId = tar.id
         where tur.userId = #{userId}

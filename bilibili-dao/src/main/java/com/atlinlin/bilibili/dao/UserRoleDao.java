@@ -13,4 +13,7 @@ import java.util.List;
 public interface UserRoleDao {
 
     List<UserRole> getUserRoleByUserId(Long userId);
+
+    //这里返回值需要改变 数据库返回列数
+    Integer addUserRole(UserRole userRole);
 }

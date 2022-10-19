@@ -32,6 +32,9 @@ public class UserService {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private UserAuthService userAuthService;
+
     //用户注册
     public void addUser(User user) {
         String phone = user.getPhone();
@@ -66,6 +69,10 @@ public class UserService {
         userInfo.setGender(UserConstant.GENDER_MALE);
         userInfo.setCreateTime(now);
         userDao.addUserInfo(userInfo);
+        //进行用户等级权限的添加
+        //提升点 这里引用userAuthService而不是userRoleService 或authRoleService
+        //比如这里引用userRoleService userRoleService引用userService 会导致循环依赖问题
+        userAuthService.addUserDefaultRole(user.getId());
     }
 
     //获取用户手机号

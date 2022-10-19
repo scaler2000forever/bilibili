@@ -5,6 +5,7 @@ import com.atlinlin.bilibili.domain.auth.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,5 +20,9 @@ public class UserRoleService {
 
     public List<UserRole> getUserRoleByUserId(Long userId) {
         return userRoleDao.getUserRoleByUserId(userId);
+    }
+
+    public void addUserRole(UserRole userRole) {
+         userRoleDao.addUserRole(userRole);
     }
 }

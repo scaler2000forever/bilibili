@@ -1,12 +1,11 @@
 package com.atlinlin.bilibili.service;
 
-import com.atlinlin.bilibili.domain.auth.AuthRoleElementOperation;
-import com.atlinlin.bilibili.domain.auth.AuthRoleMenu;
-import com.atlinlin.bilibili.domain.auth.UserAuthorities;
-import com.atlinlin.bilibili.domain.auth.UserRole;
+import com.atlinlin.bilibili.domain.auth.*;
+import com.atlinlin.bilibili.domain.constant.AuthRoleConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,5 +40,22 @@ public class UserAuthService {
         userAuthorities.setRoleElementOperationList(roleElementOperationList);
         userAuthorities.setRoleMenuList(authRoleMenuList);
         return userAuthorities;
+    }
+
+    /**
+     * 添加用户默认角色
+     * @param id
+     */
+    public void addUserDefaultRole(Long id) {
+        //添加用户和角色的关联 新建一个实体类UserRole 注意这是一个关联表的实体类
+        UserRole userRole = new UserRole();
+        //通过权限角色编码获取到权限角色
+        AuthRole role = authRoleService.getRoleByCode(AuthRoleConstant.ROLE_LV0);
+        //完成上述方法后给角色赋值
+        userRole.setUserId(id);
+        userRole.setRoleId(role.getId());
+        userRole.setCreateTime(new Date());
+        //将roleId suerId createTime传到对应的userRole表里面
+        userRoleService.addUserRole(userRole);
     }
 }

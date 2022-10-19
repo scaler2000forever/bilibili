@@ -1,6 +1,8 @@
 package com.atlinlin.bilibili.service;
 
 
+import com.atlinlin.bilibili.dao.AuthRoleDao;
+import com.atlinlin.bilibili.domain.auth.AuthRole;
 import com.atlinlin.bilibili.domain.auth.AuthRoleElementOperation;
 import com.atlinlin.bilibili.domain.auth.AuthRoleMenu;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ import java.util.Set;
 public class AuthRoleService {
 
     @Autowired
+    private AuthRoleDao authRoleDao;
+
+    @Autowired
     private AuthRoleElementOperationService authRoleElementOperationService;
 
     @Autowired
@@ -30,5 +35,9 @@ public class AuthRoleService {
 
     public List<AuthRoleMenu> getAuthRoleMenusByRoleIds(Set<Long> roleIdSet) {
         return authRoleMenuService.getAuthRoleMenusByRoleIds(roleIdSet);
+    }
+
+    public AuthRole getRoleByCode(String code) {
+         return authRoleDao.getRoleByCode(code);
     }
 }
