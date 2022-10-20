@@ -11,3 +11,10 @@ rocketmq:
   name:
     server:
       address: localhost:9876
+
+#fastDfs
+fdfs:
+  tracker-list: 192.168.117.130:22122
+  connect-timeout: 600
+  http:
+    storage-addr: http://192.168.117.130:8888/group1/
