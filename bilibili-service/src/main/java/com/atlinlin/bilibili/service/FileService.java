@@ -3,6 +3,7 @@ package com.atlinlin.bilibili.service;
 import com.atlinlin.bilibili.dao.FileDao;
 import com.atlinlin.bilibili.domain.File;
 import com.atlinlin.bilibili.service.util.FastDFSUtil;
+import com.atlinlin.bilibili.service.util.MD5Util;
 import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,15 @@ public class FileService {
     @Autowired
     private FastDFSUtil fastDFSUtil;
 
+    public  String getFileMD5(MultipartFile file) throws Exception {
+        return MD5Util.getFileMD5(file);
+    }
+
     //上传文件
     public String uploadFileBySlices(MultipartFile slice, String fileMD5, Integer sliceNo, Integer totalSliceNo) throws Exception {
         //定义方法获取MD5加密文件
       File dbFileMD5 = fileDao.getFileByMd5(fileMD5);
+        //秒传功能
         if (dbFileMD5 != null) {
             String url = dbFileMD5.getUrl();
             return url;

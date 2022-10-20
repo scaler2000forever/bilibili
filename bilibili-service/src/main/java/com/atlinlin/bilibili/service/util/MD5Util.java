@@ -42,6 +42,7 @@ public class MD5Util {
 	//获取文件md5加密后的字符串
     public static String getFileMD5(MultipartFile file) throws Exception {
 		InputStream fis = file.getInputStream();
+		//获取到字节数组非常方便
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 		int byteRead;
@@ -49,6 +50,7 @@ public class MD5Util {
 			baos.write(buffer, 0, byteRead);
 		}
 		fis.close();
+		//复用sign密码加密规则
 		return DigestUtils.md5Hex(baos.toByteArray());
     }
 }
