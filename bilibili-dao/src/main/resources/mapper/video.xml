@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atlinlin.bilibili.dao.VideoDao">
+
+    <!--拿到主键Id和视频标签相关联的添加-->
+    <insert id="addVideos" useGeneratedKeys="true" keyProperty="id">
+        insert into t_video(id, userId, url, thumbnail, title, `type`, duration, area, description, createTime)
+        VALUES (#{id}, #{userId}, #{url}, #{thumbnail}, #{title}, #{type}, #{duration}, #{area}, #{description},
+                #{createTime})
+    </insert>
+    <insert id="batchAddVideoTags">
+        insert into
+        t_video_tag(
+        videoId,
+        tagId,
+        createTime
+        )values(
+        <foreach collection="tagList" item="videoTag" separator=",">
+            #{videoTag.videoId},
+            #{videoTag.tagId},
+            #{videoTag.createTime},
+        </foreach>
+        )
+    </insert>
+    <select id="pageCountVideos" resultType="java.lang.Integer">
+        select
+        count(1)
+        from
+        t_video
+        where
+        1=1
+        <if test="area != null and area != '' ">
+            and area = #{area}
+        </if>
+    </select>
+    <select id="pageListVideos" resultType="com.atlinlin.bilibili.domain.Video">
+        select
+            *
+        from
+            t_video
+        where
+             1=1
+        <if test="area != null and area != '' ">
+            and area = #{area}
+        </if>
+        order by id desc
+        limit #{start},#{limit}
+    </select>
+</mapper>

@@ -30,7 +30,7 @@ public class DemoApi {
     }
 
     /**
-     * 文件分片
+     * 文件分片  这个操作生产中前端完成
      * @param file 传入的文件
      * @throws Exception
      */

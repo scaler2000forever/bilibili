@@ -21,7 +21,7 @@ public class FileApi {
     private FileService fileService;
 
     /**
-     * 给文件进行MD5加密返回给前端，前端拿着这个加密文件进行断点续传
+     * 给文件进行MD5加密返回给前端，前端拿着这个加密文件进行断点续传 这个操作生产中前端完成
      * @param file 上传文件
      * @return
      */
