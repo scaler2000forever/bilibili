@@ -118,6 +118,17 @@
     <select id="getRefreshTokenDetail" resultType="com.atlinlin.bilibili.domain.RefreshTokenDetail">
         select * from t_refresh_token where refreshToken = #{refreshToken}
     </select>
+    <select id="batchGetUserInfoByUserIds" resultType="com.atlinlin.bilibili.domain.UserInfo">
+        select
+        *
+        from
+        t_user_info
+        where
+        userId in
+        <foreach collection="userIdList" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
 
 
 </mapper>

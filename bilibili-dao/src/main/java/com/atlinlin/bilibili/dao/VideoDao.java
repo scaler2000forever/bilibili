@@ -1,9 +1,6 @@
 package com.atlinlin.bilibili.dao;
 
-import com.atlinlin.bilibili.domain.Video;
-import com.atlinlin.bilibili.domain.VideoCollection;
-import com.atlinlin.bilibili.domain.VideoLike;
-import com.atlinlin.bilibili.domain.VideoTag;
+import com.atlinlin.bilibili.domain.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,4 +39,20 @@ public interface VideoDao {
     Long getVideoCollections(Long videoId);
 
     VideoLike getVideoCollectionsByVideoIdAndUserId(@Param("videoId") Long videoId, @Param("userId") Long userId);
+
+    VideoCoin getVideoCoinByVideoIdAndUserId(@Param("videoId") Long videoId, @Param("userId") Long userId);
+
+    Integer addVideoCoin(VideoCoin videoCoin);
+
+    Integer updateVideoCoin(VideoCoin videoCoin);
+
+    Long getVideoCoinsAmount(Long videoId);
+
+    Integer addVideoComment(VideoComment videoComment);
+
+    Integer pageCountVideoComments(HashMap<String, Object> params);
+
+    List<VideoComment> pageListVideoComments(HashMap<String, Object> params);
+
+    List<VideoComment> batchGetVideoCommentsByRootIds(List<Long> parentIdList);
 }
