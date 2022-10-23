@@ -132,5 +132,12 @@
         </foreach>
         order by id;
     </select>
+    <select id="getVideoDetails" resultType="com.atlinlin.bilibili.domain.Video">
+        select
+            *
+        from
+            t_video
+        where id = #{id};
+    </select>
 
 </mapper>

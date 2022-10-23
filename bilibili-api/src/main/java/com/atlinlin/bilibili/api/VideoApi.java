@@ -189,4 +189,15 @@ public class VideoApi {
         return new JsonResponse<>(result);
     }
 
+    /**
+     * 获取视频详情
+     * @param videoId 必须传入
+     * @return
+     */
+    @GetMapping("/video-details")
+    public JsonResponse<Map<String,Object>> getVideoDetails(@RequestParam Long videoId){
+        Map<String,Object> result = videoService.getVideoDetails(videoId);
+        return new JsonResponse<>(result);
+    }
+
 }

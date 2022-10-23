@@ -218,6 +218,7 @@ public class VideoService {
 
     /**
      * 评论分页
+     *
      * @param size
      * @param no
      * @param videoId
@@ -266,5 +267,20 @@ public class VideoService {
             });
         }
         return new PageResult<>(total, list);
+    }
+
+    public Map<String, Object> getVideoDetails(Long videoId) {
+        Video video = videoDao.getVideoDetails(videoId);
+        Long userId = video.getUserId();
+        if (video == null) {
+            throw new ConditionException("非法视频");
+        }
+        //查询对应视频用户信息
+        User user = userService.getUserInfo(userId);
+        UserInfo userInfo = user.getUserInfo();
+        Map<String, Object> params = new HashMap<>();
+        params.put("video", video);
+        params.put("userInfo", userInfo);
+        return params;
     }
 }
